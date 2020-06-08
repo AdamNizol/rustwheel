@@ -34,7 +34,14 @@ export default {
         "green", "yellow", "purple", "yellow", "green",
         "yellow", "blue", "yellow", "green", "yellow"
       ],
-      feed: ""
+      feed: "",
+      odds: {
+        yellow: (12*4),
+        red: (1*4),
+        green: (6*4),
+        blue: (4*4),
+        purple: (2*4)
+      }
     }
   },
   methods: {
@@ -46,41 +53,64 @@ export default {
     }
   },
   computed: {
-    averageSugg: function(){
+    numList: function(){
       if(this.feed.length < 1){
-        return "yellow"
+        return []
       }
 
-      let cYellow = (12*4);
-      let cRed = 4;
-      let cGreen = (6*4);
-      let cBlue = (4*4)
-      let cPurple = (2*4)
-      //console.log(cYellow + cRed + cGreen + cBlue + cPurple)
+      let result = this.feed.split(',');
+      for(let i=0; i<result.length; i++){
+        let entry = result[i];
+        entry = parseInt(entry.trim());
+        result[i] = entry
+      }
 
-      let numList = this.feed.split(',');
-      let colList = {
+      return result;
+    },
+    colList: function(){
+      let result = {
         yellow: 0,
         red: 0,
         green: 0,
         blue: 0,
         purple: 0
       }
-      for(let i=0; i<numList.length; i++){
-        let entry = numList[i];
-        entry = parseInt(entry.trim());
-        colList[ this.segments[entry] ]++
-        numList[i] = entry
+      for(let i=0; i<this.numList.length; i++){
+        let entry = this.numList[i];
+        result[ this.segments[entry] ]++
       }
-      //console.log(numList)
-      //console.log(colList)
+      return result;
+    },
+    stats: function(){
+      return {
+        yellow: 100 * (this.colList.yellow / this.numList.length),
+        red: 100 * (this.colList.red / this.numList.length),
+        green: 100 * (this.colList.green / this.numList.length),
+        blue: 100 * (this.colList.blue / this.numList.length),
+        purple: 100 * (this.colList.purple / this.numList.length)
+      }
+    },
+    averageSugg: function(){
+      if(this.feed.length < 1){
+        return "yellow"
+      }
 
-      let pYellow = 100 * (colList.yellow / numList.length);
-      let pRed = 100 * (colList.red / numList.length);
-      let pGreen = 100 * (colList.green / numList.length);
-      let pBlue = 100 * (colList.blue / numList.length);
-      let pPurple = 100 * (colList.purple / numList.length);
+      let colours = ["yellow","green","blue","purple","red"]
 
+      let highestColour = colours[0];
+      let highest = this.odds[colours[0]] - this.stats[colours[0]];
+      console.log(highest)
+
+      for(let i = 1; i < colours.length; i++){
+        if( this.odds[colours[i]] - this.stats[colours[i]] > highest){
+          highestColour = colours[i];
+          highest = this.odds[colours[i]] - this.stats[colours[i]];
+        }
+      }
+
+      return highestColour;
+
+      /*
       let lowestRat = pYellow/cYellow;
       let lowest = "yellow";
       if(pGreen/cGreen < lowestRat){
@@ -98,7 +128,7 @@ export default {
       }
 
 
-      return lowest;
+      return lowest;*/
     }
 
   }
