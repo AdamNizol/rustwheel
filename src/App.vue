@@ -99,7 +99,7 @@ export default {
 
       let highestColour = colours[0];
       let highest = this.odds[colours[0]] - this.stats[colours[0]];
-      console.log(highest)
+      //console.log(highest)
 
       for(let i = 1; i < colours.length; i++){
         if( this.odds[colours[i]] - this.stats[colours[i]] > highest){
